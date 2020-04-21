@@ -1,0 +1,7 @@
+settings.json
+database.db
+
+# Intermediary Python files
+__pycache__/
+*.egg-info/
+*.pyc

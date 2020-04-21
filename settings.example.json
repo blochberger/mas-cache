@@ -1,0 +1,19 @@
+{
+	"ALLOWED_HOSTS": [
+		"127.0.0.1",
+		"::1",
+		"localhost"
+	],
+	"SECRET_KEY": "3y!lnj(jq(vc!(e3i-t-#3x)i%wg6$w^=b2sgzpwc%i%7$h3&w",
+	"DEBUG": false,
+	"DATABASES": {
+		"default": {
+			"ENGINE": "django.db.backends.postgresql",
+			"NAME": "mas_cache",
+			"USER": "mas_cache",
+			"PASSWORD": "kXvTFl6P0+wFOXlUfWtk2luQumc3T7L8riINupzEw3",
+			"HOST": "localhost",
+			"PORT": 5432
+		}
+	}
+}
