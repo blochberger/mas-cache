@@ -60,10 +60,16 @@ Pos ID          Bundle ID                                          Name
 […]
 ```
 
+If you want to install the applications, I recommend to take a look at [maap](https://github.com/0xbf00/maap). You can export the application IDs as list, which can then be used with `appstaller`:
+
+```sh
+manage charts --skip-bundles --list
+```
+
 You can also export the list as JSON:
 
 ```sh
-manage charts --skip-bundles --skip-unknown --json
+manage charts --skip-bundles --json
 ```
 
 To get the latest metadata (JSON) for an application, you can run the following command:

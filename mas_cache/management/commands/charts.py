@@ -25,7 +25,17 @@ class Command(CoreCommand):
 	"""
 
 	def add_arguments(self, parser: CommandParser):
-		parser.add_argument(
+		formats = parser.add_mutually_exclusive_group()
+		formats.add_argument(
+			'--list',
+			action='store_true',
+			help="""
+				Print only the application IDs in order of their chart position.
+				This is useful for automatically installing applications with
+				the appstaller utility of maap: https://github.com/0xbf00/maap
+			""",
+		)
+		formats.add_argument(
 			'--json',
 			action='store_true',
 			help="""
@@ -35,6 +45,7 @@ class Command(CoreCommand):
 				the iTunes Search API: https://itunes.apple.com/lookup?id=<app_id>.
 			""",
 		)
+
 		parser.add_argument(
 			'--skip-bundles',
 			action='store_true',
@@ -87,6 +98,7 @@ class Command(CoreCommand):
 		self.secho(info)
 
 	def handle(self, *args, **options):
+		output_list: bool = options['list']
 		output_json: bool = options['json']
 		skip_bundles: bool = options['skip_bundles']
 		skip_unknown: bool = options['skip_unknown']
@@ -113,7 +125,10 @@ class Command(CoreCommand):
 		if skip_unknown:
 			filtered_entries = [e for e in filtered_entries if e.application.is_known]
 
-		if output_json:
+		if output_list:
+			for entry in filtered_entries:
+				self.echo(str(entry.application.itunes_id))
+		elif output_json:
 			result = {
 				'type': chart.chart_type.to_api(),
 				'genre': genre.itunes_id,
