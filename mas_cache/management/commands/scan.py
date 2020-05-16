@@ -233,7 +233,7 @@ class Command(CoreCommand):
 						chart_type=chart_type,
 						timestamp=timestamp,
 					).exists():
-						return
+						continue
 
 					with transaction.atomic():
 						chart = Chart(
