@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Union
 from urllib.parse import parse_qs, urlparse
 
 from django.core.exceptions import ValidationError
-from django.core.management import CommandError
+from django.core.management import CommandError, CommandParser
 from django.db import transaction
 from django.utils import timezone
 from django.utils.timezone import datetime
@@ -42,6 +42,7 @@ class Command(CoreCommand):
 
 		self.container = os.path.expanduser('~/Library/Containers/com.apple.appstore/Data')
 		self._cache_db: Optional[sqlite3.Connection] = None
+		self.auto_update = False
 
 	def __del__(self):
 		if self._cache_db:
@@ -109,24 +110,27 @@ class Command(CoreCommand):
 			new_data = json.dumps(data, sort_keys=True, indent=2).splitlines()
 			if existing_data != new_data:
 				self.warn(f"Cached entries are different:\n  App: {app}\n  Store: {store}\n  Source: {source}\n  Timestamp: {timestamp}")
-				diff = difflib.ndiff(existing_data, new_data)
-				for line in diff:
-					if line.startswith('- '):
-						self.secho(line, fg='red')
-					elif line.startswith('  '):
-						self.secho(line)
-					elif line.startswith('+ '):
-						self.secho(line, fg='green')
-					elif line.startswith('? '):
-						self.secho(line, fg='white')
-					else:
-						assert False
-				self.secho("Update [u] / Keep [k] / Abort [a]:", fg='white', bold=True)
-				answer = input("Select an option: ")
-				while True:
-					if answer in ['u', 'k', 'a']:
-						break
-					answer = input("Please select a valid option: ")
+				if self.auto_update:
+					answer = 'u'
+				else:
+					diff = difflib.ndiff(existing_data, new_data)
+					for line in diff:
+						if line.startswith('- '):
+							self.secho(line, fg='red')
+						elif line.startswith('  '):
+							self.secho(line)
+						elif line.startswith('+ '):
+							self.secho(line, fg='green')
+						elif line.startswith('? '):
+							self.secho(line, fg='white')
+						else:
+							assert False
+					self.secho("Update [u] / Keep [k] / Abort [a]:", fg='white', bold=True)
+					answer = input("Select an option: ")
+					while True:
+						if answer in ['u', 'k', 'a']:
+							break
+						answer = input("Please select a valid option: ")
 				if answer == 'u':  # Update
 					metadata.data = data
 					metadata.full_clean()
@@ -288,9 +292,18 @@ class Command(CoreCommand):
 		else:
 			assert False, f"Unhandled mode: {mode}"
 
+	def add_arguments(self, parser: CommandParser):
+		parser.add_argument(
+			'--auto-update',
+			action='store_true',
+			help="Automatically update results.",
+		)
+
 	def handle(self, *args, **options):
 		if sys.platform != 'darwin':
 			raise CommandError("This command only works on macOS.")
+
+		self.auto_update = options['auto_update']
 
 		c = self.cache_db.cursor()
 
