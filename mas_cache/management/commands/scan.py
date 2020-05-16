@@ -62,7 +62,6 @@ class Command(CoreCommand):
 			self._cache_db = sqlite3.connect(fn)
 		return self._cache_db
 
-
 	def get_cached_resource(
 		self,
 		receiver_data: ReceiverData,
@@ -253,7 +252,6 @@ class Command(CoreCommand):
 							entry.full_clean()
 							entry.save()
 					self.success(f"Successfully added chart: {chart}")
-					return
 			else:
 				assert False, f"Unhandled {mode} sub-mode: {sub_mode}"
 		elif mode == 'editorial':

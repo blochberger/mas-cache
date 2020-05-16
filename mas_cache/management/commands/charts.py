@@ -1,7 +1,5 @@
 import json
 
-from textwrap import dedent
-
 from django.core.management import CommandError, CommandParser
 
 from core.management import CoreCommand
