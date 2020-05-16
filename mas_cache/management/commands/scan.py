@@ -202,6 +202,10 @@ class Command(CoreCommand):
 				data = resource['data']
 				for app_data in data:
 					self.add_application_data(app_data, source, timestamp, store)
+			elif sub_mode == 'search':
+				data = resource['results']['search']['data']
+				for app_data in data:
+					self.add_application_data(app_data, source, timestamp, store)
 			elif sub_mode == 'charts':
 				# Extract genre
 				query = parse_qs(url.query)
